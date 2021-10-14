@@ -1,27 +1,13 @@
 <?php
 
 /**
+ *      Автор Предко В.Н.
  * 
- * ТЗ
- * БД содержит поля:
- *   id, имя(только буквы), фамилия(только буквы), дата рождения,
- *   пол(0,1), город рождения
- *   Класс должен иметь поля:
- *   id, имя, фамилия, дата рождения, пол(0,1), город рождения
+ *      Дата создания 13.10.21 10:00
  * 
- * Класс должен иметь методы:
- *   1. Сохранение полей экземпляра класса в БД;
- *   2. Удаление человека из БД в соответствии с id объекта;
- *   3. static преобразование даты рождения в возраст (полных лет);
- *   4. static преобразование пола из двоичной системы в текстовую
- *   (муж, жен);
- *   5. Конструктор класса либо создает человека в БД с заданной
- *   информацией, либо берет информацию из БД по id (предусмотреть
- *   валидацию данных);
- *   6. Форматирование человека с преобразованием возраста и (или) пола
- *   (п.3 и п.4) в зависимотси от параметров (возвращает новый
- *   экземпляр StdClass со всеми полями изначального класса).
- *
+ *      Дата изменения 14.10.21 14:21
+ * 
+ * 
  */
 
 include_once $_SERVER['DOCUMENT_ROOT']."/AbstractDatabase.php";
@@ -125,7 +111,7 @@ class Person
     {
         return date_diff(
             date_create_from_format(DATE_FORMAT, $birthday), 
-            date_create('now'))->Y;
+            date_create('now'))->y;
     }
 
     public static function GenderToString(int $gender): string
@@ -150,8 +136,6 @@ class Person
 
     public function SetDataFromArray(array $data)
     {
-        echo "\n" . var_export($data, 1);
-        
         $this->id = $data['id'];
         $this->firstname = $data['firstname'];
         $this->lastname = $data['lastname'];
@@ -187,6 +171,7 @@ class Person
     {
         $person = new stdClass();
 
+        $person->id = $this->id;
         $person->firstname = $this->firstname;
         $person->lastname = $this->lastname;
         $person->age = $this->Age($this->birthday);

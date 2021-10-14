@@ -1,15 +1,26 @@
 <?php
 
+/**
+ *      Автор Предко В.Н.
+ * 
+ *      Дата создания 13.10.21 15:00
+ * 
+ *      Дата изменения 14.10.21 14:21
+ * 
+ * 
+ */
+
 
 include_once $_SERVER['DOCUMENT_ROOT']."/AbstractDatabase.php";
 
-
+/**
+ * Класс обеспечивает доступ к базе данных Mysql с помощью библиотеки PDO.
+ */
 
 class DatabaseMysqlPDO extends AbstractDatabase
 {
     private $host;
     private $nameDatabase;
-    private $connectionString;
     private $connection;
     private $user;
     private $password;
@@ -41,12 +52,13 @@ class DatabaseMysqlPDO extends AbstractDatabase
         
         $query = "SELECT $listFields FROM $this->nameDatabase $whereString;";
 
+        //echo "\nquery = $query" . "\nvalues = " . json_encode($values, 256);
         $stmt = $this->connection->prepare($query);
 
         $stmt->execute($values);
     
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+        //echo "\nresult = " . json_encode($result, 256);
         $this->Close();
     
         return ($result != false) ? $result : null;
@@ -78,14 +90,15 @@ class DatabaseMysqlPDO extends AbstractDatabase
         for ($i = 1; $i != count($values); $i++)
         {
             $valuesWithoutId[] = $values[$i];
+            
             $template[] = '?';
         }
 
         $query = "INSERT INTO $this->nameDatabase ("
                 . implode(',', $columnsWithoutId)
-                . ") VALUES ("
+                . ') VALUES ('
                 . implode(',', $template)
-                . ");";
+                . ');';
 
         $stmt = $this->connection->prepare($query);
 
@@ -128,15 +141,15 @@ class DatabaseMysqlPDO extends AbstractDatabase
 
             $values[] = $value;
 
-            $setData[] = " " . $key . " = ?";
+            $setData[] = ' ' . $key . ' = ?';
         }
 
         $values[] = $data['id'];
 
         $query = "UPDATE $this->nameDatabase SET "
                 . implode(',', $setData)
-                . " WHERE id = ?;";
-echo "\n$query";
+                . ' WHERE id = ?;';
+
         $stmt = $this->connection->prepare($query);
 
         $rowCount = $stmt->execute($values);
@@ -155,7 +168,7 @@ echo "\n$query";
         
         $this->Open();
 
-        $query = "DELETE FROM $this->nameDatabase WHERE id = ?";
+        $query = "DELETE FROM $this->nameDatabase WHERE id = ?;";
 
         $stmt = $this->connection->prepare($query);
 
@@ -169,7 +182,8 @@ echo "\n$query";
     // Открываем подключение.
     private function Open()
     {
-        $this->connection = new PDO("mysql:host=$this->host;dbname=$this->nameDatabase", $this->user, $this->password);
+        $this->connection = new PDO("mysql:host=$this->host;dbname=$this->nameDatabase;charset=utf8mb4", 
+                                    $this->user, $this->password);
     }
 
     // Закрываем подключение.
